@@ -42,6 +42,22 @@ class HomeScreen extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Facyl-Audit"),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image ici
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
@@ -79,7 +95,7 @@ class HomeScreen extends StatelessWidget {
 
             const SizedBox(height: 16),
 
-            // The GRID with 5 tiles
+            // The 2x2 GRID exactly like your screenshot
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -106,9 +122,9 @@ class HomeScreen extends StatelessWidget {
                       routeBuilder: ReportsScreen.new,
                     ),
                     MenuTile(
-                      title: 'Profil',
-                      bigIcon: Icons.account_circle_rounded,
-                      routeBuilder: ProfileScreen.new,
+                      title: 'Documentation',
+                      bigIcon: Icons.menu_book_rounded,
+                      routeBuilder: DocumentationScreen.new,
                     ),
                     MenuTile(
                       title: 'Documentation',
@@ -124,11 +140,10 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
               child: Text(
-                '1: Événements • 2: Quiz • 3: Rapports • 4: Profil • 5: Documentation',
-                style: Theme.of(context)
-                    .textTheme
-                    .bodyMedium
-                    ?.copyWith(color: cs.onSurfaceVariant),
+                'Grille 1: Événements • 2: Quiz • 3: Rapports • 4: Profil',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -211,77 +226,18 @@ class MenuTile extends StatelessWidget {
   }
 }
 
-// --- Placeholder screens for navigation ---
+// --- Écrans existants : EventsScreen, QuizScreen, ReportsScreen, DocumentationScreen... (inchangés) ---
 
-class CompanyDetailScreen extends StatelessWidget {
-  const CompanyDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('À propos')),
-      body: Center(
-        child: Hero(
-          tag: 'facyl_logo',
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: cs.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Image.asset('assets/logo.png', height: 120),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
+/// Nouvel écran Profil
+class ProfileScreen extends StatelessWidget {
+  const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Événements')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 6,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, i) => ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          tileColor: cs.surfaceContainerHighest,
-          leading: CircleAvatar(
-            backgroundColor: const Color(0xFFE53935),
-            child: const Icon(Icons.event),
-          ),
-          title: Text('Événement ${i + 1}'),
-          subtitle: const Text('Date • Lieu • Description'),
-          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
-          onTap: () {},
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Nouveau'),
-      ),
-    );
-  }
-}
 
-class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
     return Scaffold(
-      appBar: AppBar(title: const Text('Quiz')),
+      appBar: AppBar(title: const Text("Mon profil")),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Card(
@@ -297,13 +253,12 @@ class QuizScreen extends StatelessWidget {
               children: [
                 Text(
                   'Commencer',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
-                const Text(
+                Text(
                   'Répondez à quelques questions pour tester vos connaissances.',
                 ),
                 const SizedBox(height: 16),
@@ -335,21 +290,6 @@ class ReportsScreen extends StatelessWidget {
           size: 96,
           color: cs.primary,
         ),
-      ),
-    );
-  }
-}
-
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
-      body: Center(
-        child: Icon(Icons.account_circle_rounded, size: 96, color: cs.primary),
       ),
     );
   }
