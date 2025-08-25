@@ -396,4 +396,39 @@ class NormesFrancaiseScreen extends StatelessWidget {
       ),
     );
   }
+
+  
+}
+
+class CompanyDetailScreen extends StatelessWidget {
+  const CompanyDetailScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('À propos')),
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/logo_FACYL.jpg', height: 100),
+              const SizedBox(height: 16),
+              const Text(
+                "Facyl-Audit\nApplication mobile",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
 }
