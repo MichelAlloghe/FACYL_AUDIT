@@ -42,6 +42,22 @@ class HomeScreen extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
+      appBar: AppBar(
+        title: const Text("Facyl-Audit"),
+        actions: [
+          IconButton(
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const ProfileScreen()),
+            ),
+            icon: const CircleAvatar(
+              radius: 16,
+              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image ici
+            ),
+          ),
+          const SizedBox(width: 12),
+        ],
+      ),
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
         child: Column(
@@ -59,7 +75,7 @@ class HomeScreen extends StatelessWidget {
                 child: Hero(
                   tag: 'facyl_logo',
                   child: Image.asset(
-                    'assets/logo_FACYL.jpg', // place your HD logo here
+                    'assets/logo_FACYL.jpg',
                     width: double.infinity,
                     fit: BoxFit.fitWidth,
                   ),
@@ -70,15 +86,16 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Votre portail mobile',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 16),
 
-            // The 2x2 GRID exactly like your screenshot
+            // The GRID (Profil retiré)
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -92,7 +109,6 @@ class HomeScreen extends StatelessWidget {
                     MenuTile(
                       title: 'Événements',
                       bigIcon: Icons.calendar_month_rounded,
-                      // nicer icon style (rounded)
                       routeBuilder: EventsScreen.new,
                     ),
                     MenuTile(
@@ -106,9 +122,9 @@ class HomeScreen extends StatelessWidget {
                       routeBuilder: ReportsScreen.new,
                     ),
                     MenuTile(
-                      title: 'Profil',
-                      bigIcon: Icons.account_circle_rounded,
-                      routeBuilder: ProfileScreen.new,
+                      title: 'Documentation',
+                      bigIcon: Icons.menu_book_rounded,
+                      routeBuilder: DocumentationScreen.new,
                     ),
                   ],
                 ),
@@ -119,10 +135,11 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
               child: Text(
-                'Grille 1: Événements • 2: Quiz • 3: Rapports • 4: Profil',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                '1: Événements • 2: Quiz • 3: Rapports • 4: Documentation',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -133,7 +150,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Menu tile styled to match the provided layout (icon in top-left, title bold bottom-left)
+/// Menu tile
 class MenuTile extends StatelessWidget {
   final String title;
   final IconData bigIcon;
@@ -177,7 +194,6 @@ class MenuTile extends StatelessWidget {
               padding: const EdgeInsets.all(18.0),
               child: Stack(
                 children: [
-                  // beautiful, rounded icon in brand color (top-left)
                   Align(
                     alignment: Alignment.topLeft,
                     child: Icon(
@@ -186,12 +202,13 @@ class MenuTile extends StatelessWidget {
                       color: const Color(0xFFE53935),
                     ),
                   ),
-                  // big bold label (bottom-left)
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -205,144 +222,48 @@ class MenuTile extends StatelessWidget {
   }
 }
 
-// --- Placeholder screens for navigation ---
+// --- Écrans existants : EventsScreen, QuizScreen, ReportsScreen, DocumentationScreen... (inchangés) ---
 
-class CompanyDetailScreen extends StatelessWidget {
-  const CompanyDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('À propos')),
-      body: Center(
-        child: Hero(
-          tag: 'facyl_logo',
-          child: Container(
-            padding: const EdgeInsets.all(24),
-            decoration: BoxDecoration(
-              color: cs.surfaceContainerHighest,
-              borderRadius: BorderRadius.circular(20),
-            ),
-            child: Image.asset('assets/logo.png', height: 120),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Événements')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 6,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, i) => ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          tileColor: cs.surfaceContainerHighest,
-          leading: CircleAvatar(
-            backgroundColor: const Color(0xFFE53935),
-            child: const Icon(Icons.event),
-          ),
-          title: Text('Événement ${i + 1}'),
-          subtitle: const Text('Date • Lieu • Description'),
-          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
-          onTap: () {},
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Nouveau'),
-      ),
-    );
-  }
-}
-
-class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Quiz')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 0,
-          color: cs.surfaceContainerHighest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Commencer',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Répondez à quelques questions pour tester vos connaissances.',
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Démarrer'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ReportsScreen extends StatelessWidget {
-  const ReportsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Rapports')),
-      body: Center(
-        child: Icon(
-          Icons.insert_chart_outlined_rounded,
-          size: 96,
-          color: cs.primary,
-        ),
-      ),
-    );
-  }
-}
-
+/// Nouvel écran Profil
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
+
     return Scaffold(
-      appBar: AppBar(title: const Text('Profil')),
-      body: Center(
-        child: Icon(Icons.account_circle_rounded, size: 96, color: cs.primary),
+      appBar: AppBar(title: const Text("Mon profil")),
+      body: Padding(
+        padding: const EdgeInsets.all(20),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image
+            ),
+            const SizedBox(height: 20),
+            const Text("Nom : Dupont",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text("Prénom : Jean",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text("Poste : Auditeur financier",
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(context); // Simule la déconnexion
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text("Déconnexion"),
+              style: FilledButton.styleFrom(
+                backgroundColor: cs.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
       ),
     );
   }
