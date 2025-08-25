@@ -59,7 +59,7 @@ class HomeScreen extends StatelessWidget {
                 child: Hero(
                   tag: 'facyl_logo',
                   child: Image.asset(
-                    'assets/logo_FACYL.jpg', // place your HD logo here
+                    'assets/logo_FACYL.jpg',
                     width: double.infinity,
                     fit: BoxFit.fitWidth,
                   ),
@@ -70,15 +70,16 @@ class HomeScreen extends StatelessWidget {
             const SizedBox(height: 8),
             Text(
               'Votre portail mobile',
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
+              style: Theme.of(context)
+                  .textTheme
+                  .titleLarge
+                  ?.copyWith(fontWeight: FontWeight.w600),
               textAlign: TextAlign.center,
             ),
 
             const SizedBox(height: 16),
 
-            // The 2x2 GRID exactly like your screenshot
+            // The GRID with 5 tiles
             Expanded(
               child: Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 16.0),
@@ -92,7 +93,6 @@ class HomeScreen extends StatelessWidget {
                     MenuTile(
                       title: 'Événements',
                       bigIcon: Icons.calendar_month_rounded,
-                      // nicer icon style (rounded)
                       routeBuilder: EventsScreen.new,
                     ),
                     MenuTile(
@@ -110,6 +110,11 @@ class HomeScreen extends StatelessWidget {
                       bigIcon: Icons.account_circle_rounded,
                       routeBuilder: ProfileScreen.new,
                     ),
+                    MenuTile(
+                      title: 'Documentation',
+                      bigIcon: Icons.menu_book_rounded,
+                      routeBuilder: DocumentationScreen.new,
+                    ),
                   ],
                 ),
               ),
@@ -119,10 +124,11 @@ class HomeScreen extends StatelessWidget {
             Padding(
               padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
               child: Text(
-                'Grille 1: Événements • 2: Quiz • 3: Rapports • 4: Profil',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                '1: Événements • 2: Quiz • 3: Rapports • 4: Profil • 5: Documentation',
+                style: Theme.of(context)
+                    .textTheme
+                    .bodyMedium
+                    ?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
               ),
             ),
@@ -133,7 +139,7 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Menu tile styled to match the provided layout (icon in top-left, title bold bottom-left)
+/// Menu tile
 class MenuTile extends StatelessWidget {
   final String title;
   final IconData bigIcon;
@@ -177,7 +183,6 @@ class MenuTile extends StatelessWidget {
               padding: const EdgeInsets.all(18.0),
               child: Stack(
                 children: [
-                  // beautiful, rounded icon in brand color (top-left)
                   Align(
                     alignment: Alignment.topLeft,
                     child: Icon(
@@ -186,12 +191,13 @@ class MenuTile extends StatelessWidget {
                       color: const Color(0xFFE53935),
                     ),
                   ),
-                  // big bold label (bottom-left)
                   Align(
                     alignment: Alignment.bottomLeft,
                     child: Text(
                       title,
-                      style: Theme.of(context).textTheme.headlineSmall
+                      style: Theme.of(context)
+                          .textTheme
+                          .headlineSmall
                           ?.copyWith(fontWeight: FontWeight.w800),
                     ),
                   ),
@@ -291,12 +297,13 @@ class QuizScreen extends StatelessWidget {
               children: [
                 Text(
                   'Commencer',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w700),
                 ),
                 const SizedBox(height: 8),
-                Text(
+                const Text(
                   'Répondez à quelques questions pour tester vos connaissances.',
                 ),
                 const SizedBox(height: 16),
@@ -343,6 +350,109 @@ class ProfileScreen extends StatelessWidget {
       appBar: AppBar(title: const Text('Profil')),
       body: Center(
         child: Icon(Icons.account_circle_rounded, size: 96, color: cs.primary),
+      ),
+    );
+  }
+}
+
+// --- Nouveaux écrans Documentation ---
+
+class DocumentationScreen extends StatelessWidget {
+  const DocumentationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Documentation')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NormesInternationaleScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.public),
+              label: const Text('Normes internationales d’audit'),
+            ),
+            const SizedBox(height: 16),
+            FilledButton.icon(
+              onPressed: () => Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (_) => const NormesFrancaiseScreen(),
+                ),
+              ),
+              icon: const Icon(Icons.flag),
+              label: const Text('Normes françaises d’audit'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+class NormesInternationaleScreen extends StatelessWidget {
+  const NormesInternationaleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final normes = [
+      "ISA 200 : Objectifs globaux de l’auditeur indépendant",
+      "ISA 315 : Identification et évaluation des risques",
+      "ISA 500 : Éléments probants",
+      "ISA 700 : Rapport de l’auditeur sur les états financiers",
+    ];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Normes internationales')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: normes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => Card(
+          color: cs.surfaceContainerHighest,
+          child: ListTile(
+            leading: const Icon(Icons.article_outlined),
+            title: Text(normes[i]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class NormesFrancaiseScreen extends StatelessWidget {
+  const NormesFrancaiseScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final normes = [
+      "NEP 200 : Objectifs et principes généraux",
+      "NEP 240 : Responsabilités de l’auditeur concernant la fraude",
+      "NEP 300 : Planification de l’audit",
+      "NEP 700 : Rapport de certification",
+    ];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Normes françaises')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: normes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => Card(
+          color: cs.surfaceContainerHighest,
+          child: ListTile(
+            leading: const Icon(Icons.article_outlined),
+            title: Text(normes[i]),
+          ),
+        ),
       ),
     );
   }
