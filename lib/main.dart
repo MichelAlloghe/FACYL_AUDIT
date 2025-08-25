@@ -52,7 +52,7 @@ class HomeScreen extends StatelessWidget {
             ),
             icon: const CircleAvatar(
               radius: 16,
-              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image ici
+              backgroundImage: AssetImage("assets/profile.jpg"), // Mets ton image ici
             ),
           ),
           const SizedBox(width: 12),
@@ -109,22 +109,22 @@ class HomeScreen extends StatelessWidget {
                     MenuTile(
                       title: 'Événements',
                       bigIcon: Icons.calendar_month_rounded,
-                      routeBuilder: EventsScreen.new,
+                      routeBuilder: () => EventsScreen(),
                     ),
                     MenuTile(
                       title: 'Quiz',
                       bigIcon: Icons.quiz_rounded,
-                      routeBuilder: QuizScreen.new,
+                      routeBuilder: () => QuizScreen(),
                     ),
                     MenuTile(
                       title: 'Rapports',
                       bigIcon: Icons.bar_chart_rounded,
-                      routeBuilder: ReportsScreen.new,
+                      routeBuilder: () => ReportsScreen(),
                     ),
                     MenuTile(
                       title: 'Documentation',
                       bigIcon: Icons.menu_book_rounded,
-                      routeBuilder: DocumentationScreen.new,
+                      routeBuilder: () => DocumentationScreen(),
                     ),
                     MenuTile(
                       title: 'Documentation',
@@ -226,9 +226,41 @@ class MenuTile extends StatelessWidget {
   }
 }
 
-// --- Écrans existants : EventsScreen, QuizScreen, ReportsScreen, DocumentationScreen... (inchangés) ---
+// --- Écran À propos ---
+class CompanyDetailScreen extends StatelessWidget {
+  const CompanyDetailScreen({super.key});
 
-/// Nouvel écran Profil
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('À propos')),
+      body: Center(
+        child: Container(
+          padding: const EdgeInsets.all(24),
+          decoration: BoxDecoration(
+            color: cs.surfaceContainerHighest,
+            borderRadius: BorderRadius.circular(20),
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Image.asset('assets/logo_FACYL.jpg', height: 100),
+              const SizedBox(height: 16),
+              const Text(
+                "Facyl-Audit\nApplication mobile",
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- Écran Profil ---
 class ProfileScreen extends StatelessWidget {
   const ProfileScreen({super.key});
 
@@ -310,6 +342,155 @@ class DocumentationScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
+            const CircleAvatar(
+              radius: 50,
+              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image
+            ),
+            const SizedBox(height: 20),
+            const Text("Nom : Dupont",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text("Prénom : Jean",
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
+            const Text("Poste : Auditeur financier",
+                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
+            const Spacer(),
+            FilledButton.icon(
+              onPressed: () {
+                Navigator.pop(context); // Simule la déconnexion
+              },
+              icon: const Icon(Icons.logout),
+              label: const Text("Déconnexion"),
+              style: FilledButton.styleFrom(
+                backgroundColor: cs.error,
+              ),
+            ),
+            const SizedBox(height: 20),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- Événements ---
+class EventsScreen extends StatelessWidget {
+  const EventsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Événements')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          tileColor: cs.surfaceContainerHighest,
+          leading: CircleAvatar(
+            backgroundColor: const Color(0xFFE53935),
+            child: const Icon(Icons.event),
+          ),
+          title: Text('Événement ${i + 1}'),
+          subtitle: const Text('Date • Lieu • Description'),
+          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+          onTap: () {},
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: const Icon(Icons.add),
+        label: const Text('Nouveau'),
+      ),
+    );
+  }
+}
+
+// --- Quiz ---
+class QuizScreen extends StatelessWidget {
+  const QuizScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Quiz')),
+      body: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Card(
+          elevation: 0,
+          color: cs.surfaceContainerHighest,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(22),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                Text(
+                  'Commencer',
+                  style: Theme.of(context)
+                      .textTheme
+                      .titleLarge
+                      ?.copyWith(fontWeight: FontWeight.w700),
+                ),
+                const SizedBox(height: 8),
+                const Text(
+                  'Répondez à quelques questions pour tester vos connaissances.',
+                ),
+                const SizedBox(height: 16),
+                FilledButton.icon(
+                  onPressed: () {},
+                  icon: const Icon(Icons.play_arrow_rounded),
+                  label: const Text('Démarrer'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- Rapports ---
+class ReportsScreen extends StatelessWidget {
+  const ReportsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Rapports')),
+      body: Center(
+        child: Icon(
+          Icons.insert_chart_outlined_rounded,
+          size: 96,
+          color: cs.primary,
+        ),
+      ),
+    );
+  }
+}
+
+// --- Documentation ---
+class DocumentationScreen extends StatelessWidget {
+  const DocumentationScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Documentation')),
+      body: Padding(
+        padding: const EdgeInsets.all(20.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
             FilledButton.icon(
               onPressed: () => Navigator.push(
                 context,
@@ -332,6 +513,68 @@ class DocumentationScreen extends StatelessWidget {
               label: const Text('Normes françaises d’audit'),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// --- Normes Internationales ---
+class NormesInternationaleScreen extends StatelessWidget {
+  const NormesInternationaleScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final normes = [
+      "ISA 200 : Objectifs globaux de l’auditeur indépendant",
+      "ISA 315 : Identification et évaluation des risques",
+      "ISA 500 : Éléments probants",
+      "ISA 700 : Rapport de l’auditeur sur les états financiers",
+    ];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Normes internationales')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: normes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => Card(
+          color: cs.surfaceContainerHighest,
+          child: ListTile(
+            leading: const Icon(Icons.article_outlined),
+            title: Text(normes[i]),
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+// --- Normes Françaises ---
+class NormesFrancaiseScreen extends StatelessWidget {
+  const NormesFrancaiseScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    final normes = [
+      "NEP 200 : Objectifs et principes généraux",
+      "NEP 240 : Responsabilités de l’auditeur concernant la fraude",
+      "NEP 300 : Planification de l’audit",
+      "NEP 700 : Rapport de certification",
+    ];
+    return Scaffold(
+      appBar: AppBar(title: const Text('Normes françaises')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: normes.length,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => Card(
+          color: cs.surfaceContainerHighest,
+          child: ListTile(
+            leading: const Icon(Icons.article_outlined),
+            title: Text(normes[i]),
+          ),
         ),
       ),
     );
