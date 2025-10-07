@@ -1,35 +1,34 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
+import 'theme.dart';
+import 'quiz_screen.dart';
+import 'about_us_screen.dart';
+import 'profile_screen.dart' as profile;
+import 'SplashScreen.dart';
+
+
 
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const seed = Color(0xFFE53935); // Facyl red
+
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xFFE53935); // Facyl red
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Facyl-Audit',
       themeMode: ThemeMode.system,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-      ),
-      home: const HomeScreen(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      initialRoute: '/', // <-- start on Splash
+      routes: {
+        '/': (_) => const SplashScreen(), // first page
+        '/home': (_) => const HomeScreen(),
+        '/profile': (_) => const profile.ProfileScreen()
+      },
     );
   }
 }
@@ -42,109 +41,123 @@ class HomeScreen extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Facyl-Audit"),
-        actions: [
-          IconButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ProfileScreen()),
-            ),
-            icon: const CircleAvatar(
-              radius: 16,
-              backgroundImage: AssetImage("assets/profile.jpg"), // Mets ton image ici
-            ),
-          ),
-          const SizedBox(width: 12),
-        ],
-      ),
-      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // HEADER with clickable logo
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CompanyDetailScreen(),
-                  ),
-                ),
+        child: CustomScrollView(
+          slivers: [
+            // LOGO at the top (modern style)
+            // LOGO at the top (clickable → AboutUs)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
                 child: Hero(
                   tag: 'facyl_logo',
-                  child: Image.asset(
-                    'assets/logo_FACYL.jpg',
-                    width: double.infinity,
-                    fit: BoxFit.fitWidth,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AboutUsScreen(),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            'assets/logo_FACYL.jpg',
+                            height: 90,
+                            width: double.infinity, // keeps the hero stable
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
 
-            const SizedBox(height: 8),
-            Text(
-              'Votre portail mobile',
-              style: Theme.of(context)
-                  .textTheme
-                  .titleLarge
-                  ?.copyWith(fontWeight: FontWeight.w600),
-              textAlign: TextAlign.center,
-            ),
-
-            const SizedBox(height: 16),
-
-            // The 2x2 GRID exactly like your screenshot
-            Expanded(
+            // PROFILE HEADER
+            SliverToBoxAdapter(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                child: GridView.count(
-                  physics: const BouncingScrollPhysics(),
-                  crossAxisCount: 2,
-                  mainAxisSpacing: 18,
-                  crossAxisSpacing: 18,
-                  childAspectRatio: 1.02,
-                  children: const [
-                    MenuTile(
-                      title: 'Événements',
-                      bigIcon: Icons.calendar_month_rounded,
-                      routeBuilder: () => EventsScreen(),
-                    ),
-                    MenuTile(
-                      title: 'Quiz',
-                      bigIcon: Icons.quiz_rounded,
-                      routeBuilder: () => QuizScreen(),
-                    ),
-                    MenuTile(
-                      title: 'Rapports',
-                      bigIcon: Icons.bar_chart_rounded,
-                      routeBuilder: () => ReportsScreen(),
-                    ),
-                    MenuTile(
-                      title: 'Documentation',
-                      bigIcon: Icons.menu_book_rounded,
-                      routeBuilder: () => DocumentationScreen(),
-                    ),
-                    MenuTile(
-                      title: 'Documentation',
-                      bigIcon: Icons.menu_book_rounded,
-                      routeBuilder: DocumentationScreen.new,
-                    ),
-                  ],
-                ),
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: const _ProfileHeader(),
               ),
             ),
 
-            // FOOTER LEGEND
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 4, 16, 14),
-              child: Text(
-                'Grille 1: Événements • 2: Quiz • 3: Rapports • 4: Profil',
-                style: Theme.of(
-                  context,
-                ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
-                textAlign: TextAlign.center,
+            // MENU GRID
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.05,
+                ),
+                delegate: SliverChildListDelegate.fixed([
+                  MenuTileNew(
+                    title: 'Événements',
+                    icon: Icons.calendar_month_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EventsScreen()),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Quiz',
+                    icon: Icons.quiz_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const QuizIntroScreen(),
+                      ),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Rapports',
+                    icon: Icons.bar_chart_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ReportsScreen()),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Documentation',
+                    icon: Icons.menu_book_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DocumentationScreen(),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+
+            // LEGEND FOOTER
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
+                child: Text(
+                  'Événements • Quiz • Rapports • Documentation',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                ),
               ),
             ),
           ],
@@ -154,299 +167,132 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Menu tile
-class MenuTile extends StatelessWidget {
-  final String title;
-  final IconData bigIcon;
-  final Widget Function() routeBuilder;
+/// Modern profile header with gradient background
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({super.key});
 
-  const MenuTile({
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [cs.primary, cs.tertiary.withOpacity(0.95)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 10, 14),
+      child: Row(
+        children: [
+          const CircleAvatar(
+            radius: 26,
+            backgroundImage: AssetImage("assets/profile.jpg"),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mohamed Reda',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: cs.onPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Opacity(
+                  opacity: 0.9,
+                  child: Text(
+                    '@auditor',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: cs.onPrimary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => Navigator.of(context).pushNamed('/profile'),
+            icon: Icon(Icons.chevron_right, color: cs.onPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// New compact tile that ensures text fits (centered, 2 lines max)
+class MenuTileNew extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const MenuTileNew({
     super.key,
     required this.title,
-    required this.bigIcon,
-    required this.routeBuilder,
+    required this.icon,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
 
-    return Hero(
-      tag: 'tile_$title',
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          borderRadius: BorderRadius.circular(22),
-          onTap: () => Navigator.push(
-            context,
-            MaterialPageRoute(builder: (_) => routeBuilder()),
-          ),
-          child: Ink(
-            decoration: BoxDecoration(
-              color: Theme.of(context).colorScheme.surface,
-              borderRadius: BorderRadius.circular(22),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.06),
-                  blurRadius: 16,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-              border: Border.all(color: cs.outlineVariant.withOpacity(0.35)),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.all(18.0),
-              child: Stack(
-                children: [
-                  Align(
-                    alignment: Alignment.topLeft,
-                    child: Icon(
-                      bigIcon,
-                      size: 48,
-                      color: const Color(0xFFE53935),
-                    ),
-                  ),
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Text(
-                      title,
-                      style: Theme.of(context)
-                          .textTheme
-                          .headlineSmall
-                          ?.copyWith(fontWeight: FontWeight.w800),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-// --- Écran À propos ---
-class CompanyDetailScreen extends StatelessWidget {
-  const CompanyDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('À propos')),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(24),
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Ink(
           decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest,
+            color: Theme.of(context).brightness == Brightness.light
+                ? cs.surface
+                : cs.surfaceVariant.withOpacity(0.6),
             borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/logo_FACYL.jpg', height: 100),
-              const SizedBox(height: 16),
-              const Text(
-                "Facyl-Audit\nApplication mobile",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            border: Border.all(color: cs.outlineVariant.withOpacity(0.35)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-}
-
-// --- Écran Profil ---
-class ProfileScreen extends StatelessWidget {
-  const ProfileScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-
-    return Scaffold(
-      appBar: AppBar(title: const Text("Mon profil")),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 0,
-          color: cs.surfaceContainerHighest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cs.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(icon, size: 32, color: cs.onPrimaryContainer),
+                ),
+                const Spacer(),
                 Text(
-                  'Commencer',
-                  style: Theme.of(
-                    context,
-                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Répondez à quelques questions pour tester vos connaissances.',
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Démarrer'),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class ReportsScreen extends StatelessWidget {
-  const ReportsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Rapports')),
-      body: Center(
-        child: Icon(
-          Icons.insert_chart_outlined_rounded,
-          size: 96,
-          color: cs.primary,
-        ),
-      ),
-    );
-  }
-}
-
-// --- Nouveaux écrans Documentation ---
-
-class DocumentationScreen extends StatelessWidget {
-  const DocumentationScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Documentation')),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            const CircleAvatar(
-              radius: 50,
-              backgroundImage: AssetImage("assets/profile.jpg"), // ← Mets ton image
-            ),
-            const SizedBox(height: 20),
-            const Text("Nom : Dupont",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            const Text("Prénom : Jean",
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600)),
-            const Text("Poste : Auditeur financier",
-                style: TextStyle(fontSize: 16, fontStyle: FontStyle.italic)),
-            const Spacer(),
-            FilledButton.icon(
-              onPressed: () {
-                Navigator.pop(context); // Simule la déconnexion
-              },
-              icon: const Icon(Icons.logout),
-              label: const Text("Déconnexion"),
-              style: FilledButton.styleFrom(
-                backgroundColor: cs.error,
-              ),
-            ),
-            const SizedBox(height: 20),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-// --- Événements ---
-class EventsScreen extends StatelessWidget {
-  const EventsScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Événements')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: 6,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, i) => ListTile(
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(16),
-          ),
-          tileColor: cs.surfaceContainerHighest,
-          leading: CircleAvatar(
-            backgroundColor: const Color(0xFFE53935),
-            child: const Icon(Icons.event),
-          ),
-          title: Text('Événement ${i + 1}'),
-          subtitle: const Text('Date • Lieu • Description'),
-          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
-          onTap: () {},
-        ),
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () {},
-        icon: const Icon(Icons.add),
-        label: const Text('Nouveau'),
-      ),
-    );
-  }
-}
-
-// --- Quiz ---
-class QuizScreen extends StatelessWidget {
-  const QuizScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('Quiz')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Card(
-          elevation: 0,
-          color: cs.surfaceContainerHighest,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(22),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                Text(
-                  'Commencer',
-                  style: Theme.of(context)
-                      .textTheme
-                      .titleLarge
-                      ?.copyWith(fontWeight: FontWeight.w700),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Répondez à quelques questions pour tester vos connaissances.',
-                ),
-                const SizedBox(height: 16),
-                FilledButton.icon(
-                  onPressed: () {},
-                  icon: const Icon(Icons.play_arrow_rounded),
-                  label: const Text('Démarrer'),
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ],
             ),
@@ -477,7 +323,44 @@ class ReportsScreen extends StatelessWidget {
   }
 }
 
-// --- Documentation ---
+// --- Événements ---
+class EventsScreen extends StatelessWidget {
+  const EventsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Événements')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          tileColor: cs.surfaceVariant,
+          leading: const CircleAvatar(
+            backgroundColor: Color(0xFFE53935),
+            child: Icon(Icons.event),
+          ),
+          title: Text('Événement ${i + 1}'),
+          subtitle: const Text('Date • Lieu • Description'),
+          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+          onTap: () {},
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: const Icon(Icons.add),
+        label: const Text('Nouveau'),
+      ),
+    );
+  }
+}
+
+// --- Documentation (menu) ---
 class DocumentationScreen extends StatelessWidget {
   const DocumentationScreen({super.key});
 
@@ -539,7 +422,7 @@ class NormesInternationaleScreen extends StatelessWidget {
         itemCount: normes.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
+          color: cs.surfaceVariant,
           child: ListTile(
             leading: const Icon(Icons.article_outlined),
             title: Text(normes[i]),
@@ -570,105 +453,10 @@ class NormesFrancaiseScreen extends StatelessWidget {
         itemCount: normes.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
+          color: cs.surfaceVariant,
           child: ListTile(
             leading: const Icon(Icons.article_outlined),
             title: Text(normes[i]),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class NormesInternationaleScreen extends StatelessWidget {
-  const NormesInternationaleScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final normes = [
-      "ISA 200 : Objectifs globaux de l’auditeur indépendant",
-      "ISA 315 : Identification et évaluation des risques",
-      "ISA 500 : Éléments probants",
-      "ISA 700 : Rapport de l’auditeur sur les états financiers",
-    ];
-    return Scaffold(
-      appBar: AppBar(title: const Text('Normes internationales')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: normes.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
-          child: ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: Text(normes[i]),
-          ),
-        ),
-      ),
-    );
-  }
-}
-
-class NormesFrancaiseScreen extends StatelessWidget {
-  const NormesFrancaiseScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    final normes = [
-      "NEP 200 : Objectifs et principes généraux",
-      "NEP 240 : Responsabilités de l’auditeur concernant la fraude",
-      "NEP 300 : Planification de l’audit",
-      "NEP 700 : Rapport de certification",
-    ];
-    return Scaffold(
-      appBar: AppBar(title: const Text('Normes françaises')),
-      body: ListView.separated(
-        padding: const EdgeInsets.all(16),
-        itemCount: normes.length,
-        separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
-          child: ListTile(
-            leading: const Icon(Icons.article_outlined),
-            title: Text(normes[i]),
-          ),
-        ),
-      ),
-    );
-  }
-
-  
-}
-
-class CompanyDetailScreen extends StatelessWidget {
-  const CompanyDetailScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    final cs = Theme.of(context).colorScheme;
-    return Scaffold(
-      appBar: AppBar(title: const Text('À propos')),
-      body: Center(
-        child: Container(
-          padding: const EdgeInsets.all(24),
-          decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest,
-            borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/logo_FACYL.jpg', height: 100),
-              const SizedBox(height: 16),
-              const Text(
-                "Facyl-Audit\nApplication mobile",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-              ),
-            ],
           ),
         ),
       ),
