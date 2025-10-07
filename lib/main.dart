@@ -1,6 +1,11 @@
 // lib/main.dart
 import 'package:flutter/material.dart';
 import 'package:fl_chart/fl_chart.dart';
+import 'theme.dart';
+import 'quiz_screen.dart';
+import 'about_us_screen.dart';
+import 'profile_screen.dart' as profile;
+import 'SplashScreen.dart';
 
 
 void main() => runApp(const MyApp());
@@ -8,30 +13,22 @@ void main() => runApp(const MyApp());
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
+  static const seed = Color(0xFFE53935); // Facyl red
+
   @override
   Widget build(BuildContext context) {
-    const seed = Color(0xFFE53935); // Facyl red
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Facyl-Audit',
       themeMode: ThemeMode.system,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.light,
-        ),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-      ),
-      darkTheme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(
-          seedColor: seed,
-          brightness: Brightness.dark,
-        ),
-        useMaterial3: true,
-        fontFamily: 'Roboto',
-      ),
-      home: const HomeScreen(),
+      theme: lightTheme,
+      darkTheme: darkTheme,
+      initialRoute: '/', // <-- start on Splash
+      routes: {
+        '/': (_) => const SplashScreen(), // first page
+        '/home': (_) => const HomeScreen(),
+        '/profile': (_) => const profile.ProfileScreen()
+      },
     );
   }
 }
@@ -63,29 +60,51 @@ class HomeScreen extends StatelessWidget {
 
       backgroundColor: Theme.of(context).scaffoldBackgroundColor,
       body: SafeArea(
-        child: Column(
-          children: [
-            // HEADER with clickable logo
-            Padding(
-              padding: const EdgeInsets.fromLTRB(24, 12, 24, 8),
-              child: GestureDetector(
-                onTap: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const CompanyDetailScreen(),
-                  ),
-                ),
+        child: CustomScrollView(
+          slivers: [
+            // LOGO at the top (modern style)
+            // LOGO at the top (clickable → AboutUs)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(24, 16, 24, 12),
                 child: Hero(
                   tag: 'facyl_logo',
-                  child: Image.asset(
-                    'assets/logo_FACYL.jpg',
-                    width: double.infinity,
-                    fit: BoxFit.fitWidth,
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      borderRadius: BorderRadius.circular(20),
+                      onTap: () => Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (_) => const AboutUsScreen(),
+                        ),
+                      ),
+                      child: Container(
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.08),
+                              blurRadius: 20,
+                              offset: const Offset(0, 8),
+                            ),
+                          ],
+                        ),
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(20),
+                          child: Image.asset(
+                            'assets/logo_FACYL.jpg',
+                            height: 90,
+                            width: double.infinity, // keeps the hero stable
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      ),
+                    ),
                   ),
                 ),
               ),
             ),
-
             const SizedBox(height: 8),
             Text(
               'Votre portail mobile',
@@ -142,6 +161,77 @@ class HomeScreen extends StatelessWidget {
                   context,
                 ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
                 textAlign: TextAlign.center,
+=======
+            // PROFILE HEADER
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 0, 16, 12),
+                child: const _ProfileHeader(),
+              ),
+            ),
+
+            // MENU GRID
+            SliverPadding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              sliver: SliverGrid(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  mainAxisSpacing: 16,
+                  crossAxisSpacing: 16,
+                  childAspectRatio: 1.05,
+                ),
+                delegate: SliverChildListDelegate.fixed([
+                  MenuTileNew(
+                    title: 'Événements',
+                    icon: Icons.calendar_month_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const EventsScreen()),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Quiz',
+                    icon: Icons.quiz_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const QuizIntroScreen(),
+                      ),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Rapports',
+                    icon: Icons.bar_chart_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ReportsScreen()),
+                    ),
+                  ),
+                  MenuTileNew(
+                    title: 'Documentation',
+                    icon: Icons.menu_book_rounded,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => const DocumentationScreen(),
+                      ),
+                    ),
+                  ),
+                ]),
+              ),
+            ),
+
+            // LEGEND FOOTER
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 12, 16, 18),
+                child: Text(
+                  'Événements • Quiz • Rapports • Documentation',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(
+                    context,
+                  ).textTheme.bodyMedium?.copyWith(color: cs.onSurfaceVariant),
+                ),
               ),
             ),
           ],
@@ -151,23 +241,90 @@ class HomeScreen extends StatelessWidget {
   }
 }
 
-/// Menu tile
-class MenuTile extends StatelessWidget {
-  final String title;
-  final IconData bigIcon;
-  final Widget Function() routeBuilder;
+/// Modern profile header with gradient background
+class _ProfileHeader extends StatelessWidget {
+  const _ProfileHeader({super.key});
 
-  const MenuTile({
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      decoration: BoxDecoration(
+        gradient: LinearGradient(
+          colors: [cs.primary, cs.tertiary.withOpacity(0.95)],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(24),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.08),
+            blurRadius: 18,
+            offset: const Offset(0, 10),
+          ),
+        ],
+      ),
+      padding: const EdgeInsets.fromLTRB(16, 16, 10, 14),
+      child: Row(
+        children: [
+          const CircleAvatar(
+            radius: 26,
+            backgroundImage: AssetImage("assets/profile.jpg"),
+          ),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  'Mohamed Reda',
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    color: cs.onPrimary,
+                    fontWeight: FontWeight.w700,
+                  ),
+                ),
+                Opacity(
+                  opacity: 0.9,
+                  child: Text(
+                    '@auditor',
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: cs.onPrimary),
+                  ),
+                ),
+              ],
+            ),
+          ),
+          IconButton(
+            onPressed: () => Navigator.of(context).pushNamed('/profile'),
+            icon: Icon(Icons.chevron_right, color: cs.onPrimary),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+/// New compact tile that ensures text fits (centered, 2 lines max)
+class MenuTileNew extends StatelessWidget {
+  final String title;
+  final IconData icon;
+  final VoidCallback onTap;
+
+  const MenuTileNew({
     super.key,
     required this.title,
-    required this.bigIcon,
-    required this.routeBuilder,
+    required this.icon,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     final cs = Theme.of(context).colorScheme;
-
     return Hero(
       tag: 'tile_$title',
       child: Material(
@@ -233,19 +390,25 @@ class CompanyDetailScreen extends StatelessWidget {
       body: Center(
         child: Container(
           padding: const EdgeInsets.all(24),
+
+    return Material(
+      color: Colors.transparent,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(20),
+        onTap: onTap,
+        child: Ink(
+>>>>>>> 5b5ead2eff0b5b2c0a957416b583bacd79fe74f1
           decoration: BoxDecoration(
-            color: cs.surfaceContainerHighest,
+            color: Theme.of(context).brightness == Brightness.light
+                ? cs.surface
+                : cs.surfaceVariant.withOpacity(0.6),
             borderRadius: BorderRadius.circular(20),
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/logo_FACYL.jpg', height: 100),
-              const SizedBox(height: 16),
-              const Text(
-                "Facyl-Audit\nApplication mobile",
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+            border: Border.all(color: cs.outlineVariant.withOpacity(0.35)),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.06),
+                blurRadius: 16,
+                offset: const Offset(0, 10),
               ),
             ],
           ),
@@ -405,11 +568,20 @@ class QuizScreen extends StatelessWidget {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(22),
           ),
+
           child: Padding(
-            padding: const EdgeInsets.all(20.0),
+            padding: const EdgeInsets.all(16),
             child: Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: cs.primaryContainer,
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(icon, size: 32, color: cs.onPrimaryContainer),
+                ),
+                const Spacer(),
                 Text(
                   'Commencer',
                   style: Theme.of(
@@ -425,6 +597,14 @@ class QuizScreen extends StatelessWidget {
                   onPressed: () {},
                   icon: const Icon(Icons.play_arrow_rounded),
                   label: const Text('Démarrer'),
+                  title,
+                  textAlign: TextAlign.center,
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w700,
+                  ),
+
                 ),
               ],
             ),
@@ -782,7 +962,44 @@ class _ReportCard extends StatelessWidget {
   }
 }
 
-// --- Documentation ---
+// --- Événements ---
+class EventsScreen extends StatelessWidget {
+  const EventsScreen({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Scaffold(
+      appBar: AppBar(title: const Text('Événements')),
+      body: ListView.separated(
+        padding: const EdgeInsets.all(16),
+        itemCount: 6,
+        separatorBuilder: (_, __) => const SizedBox(height: 12),
+        itemBuilder: (context, i) => ListTile(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16),
+          ),
+          tileColor: cs.surfaceVariant,
+          leading: const CircleAvatar(
+            backgroundColor: Color(0xFFE53935),
+            child: Icon(Icons.event),
+          ),
+          title: Text('Événement ${i + 1}'),
+          subtitle: const Text('Date • Lieu • Description'),
+          trailing: Icon(Icons.chevron_right, color: cs.onSurfaceVariant),
+          onTap: () {},
+        ),
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {},
+        icon: const Icon(Icons.add),
+        label: const Text('Nouveau'),
+      ),
+    );
+  }
+}
+
+// --- Documentation (menu) ---
 class DocumentationScreen extends StatelessWidget {
   const DocumentationScreen({super.key});
 
@@ -844,7 +1061,7 @@ class NormesInternationaleScreen extends StatelessWidget {
         itemCount: normes.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
+          color: cs.surfaceVariant,
           child: ListTile(
             leading: const Icon(Icons.article_outlined),
             title: Text(normes[i]),
@@ -875,7 +1092,7 @@ class NormesFrancaiseScreen extends StatelessWidget {
         itemCount: normes.length,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
         itemBuilder: (context, i) => Card(
-          color: cs.surfaceContainerHighest,
+          color: cs.surfaceVariant,
           child: ListTile(
             leading: const Icon(Icons.article_outlined),
             title: Text(normes[i]),
