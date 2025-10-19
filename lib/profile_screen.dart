@@ -195,7 +195,7 @@ class _ProfileHeader extends StatelessWidget {
           children: [
             const CircleAvatar(
               radius: 48,
-              backgroundImage: AssetImage('assets/profile.jpg'),
+              backgroundImage: AssetImage('assets/toto.png'),
             ),
             Material(
               color: Colors.transparent,
