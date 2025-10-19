@@ -235,7 +235,7 @@ class _ProfileHeader extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'Mohamed Reda',
+                  'Abel Solo',
                   maxLines: 1,
                   overflow: TextOverflow.ellipsis,
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
@@ -349,6 +349,13 @@ class EventScreen extends StatelessWidget {
     final cs = Theme.of(context).colorScheme;
 
     final events = [
+      {
+        "title": "Ouverture FACYL-AUDIT France",
+        "date": "07 fevrier 2026",
+        "location": "Orleans, France",
+        "description": "Ouverture du premier cabinet FACYL-AUDIT en France.",
+        "url": "https://www.facyl-audit.fr"
+      },
       {
         "title": "Conférence Audit et Gouvernance 2026",
         "date": "12-13 mai 2026",

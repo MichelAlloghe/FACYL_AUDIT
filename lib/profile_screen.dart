@@ -19,8 +19,8 @@ class ProfileScreen extends StatelessWidget {
             children: [
               // Header avatar + name + role
               _ProfileHeader(
-                name: 'Mohamed Reda',
-                role: 'Auditeur Interne',
+                name: 'Abel Solo',
+                role: 'Auditeur Segnor',
                 company: 'FACYL-AUDIT',
                 onChangePhoto: () {
                   ScaffoldMessenger.of(context).showSnackBar(
